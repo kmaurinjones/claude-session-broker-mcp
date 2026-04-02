@@ -33,6 +33,85 @@ The effect is teammate-style session orchestration:
 - `tell_session` sends a one-way note.
 - `reply_to_message` answers an incoming request.
 
+## Install
+
+### 1. Clone and set up the repo
+
+```bash
+git clone https://github.com/kmaurinjones/claude-session-broker-mcp.git
+cd claude-session-broker-mcp
+uv python install 3.14.0
+uv sync
+```
+
+### 2. Register the MCP server with Claude Code
+
+From the cloned repo root:
+
+```bash
+claude mcp add -s user \
+  -e CLAUDE_SESSION_BROKER_URL=http://127.0.0.1:7899 \
+  session-broker -- "$PWD/.venv/bin/claude-session-broker-server"
+```
+
+That creates a user-scope stdio MCP entry pointing Claude Code at the repo-local server binary.
+
+### 3. Install the shell wrapper
+
+The wrapper records `CC_NAME` and `CC_GROUP` before Claude starts, which is required because Claude strips those ad-hoc environment variables before spawning the MCP subprocess.
+
+Add this line to your shell startup file:
+
+```bash
+source /absolute/path/to/claude-session-broker-mcp/scripts/claude_session_broker_shell.zsh
+```
+
+Then reload your shell:
+
+```bash
+source ~/.zshrc
+```
+
+### 4. Launch named sessions
+
+Direct launch:
+
+```bash
+cd /path/to/orchestrator-repo
+CC_NAME=orchestrator CC_GROUP=main claude --dangerously-skip-permissions --dangerously-load-development-channels server:session-broker
+```
+
+```bash
+cd /path/to/worker-repo
+CC_NAME=worker-a CC_GROUP=main claude --dangerously-skip-permissions --dangerously-load-development-channels server:session-broker
+```
+
+Wrapper shortcut:
+
+```bash
+cd /path/to/orchestrator-repo
+/absolute/path/to/claude-session-broker-mcp/scripts/cc-session orchestrator main -- --dangerously-skip-permissions
+```
+
+```bash
+cd /path/to/worker-repo
+/absolute/path/to/claude-session-broker-mcp/scripts/cc-session worker-a main -- --dangerously-skip-permissions
+```
+
+### 5. Verify the install
+
+In any launched Claude tab:
+
+```text
+/mcp
+```
+
+You should see `session-broker` connected with tools available. Then from one session:
+
+```text
+Call list_sessions and show me the result.
+```
+
 ## Test Loop
 
 1. Start named Claude Code sessions:

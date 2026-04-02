@@ -2,11 +2,37 @@
 
 ## Local Setup
 
-1. `uv python install 3.14.0`
-2. `uv sync`
-3. In each Claude Code tab, launch the MCP server with a unique name and group.
-4. The first live session auto-starts the local broker at `~/.claude-session-broker`.
-5. Load your shell startup file in any existing terminal so the `claude` wrapper function is active.
+1. Clone the repo:
+
+```bash
+git clone https://github.com/kmaurinjones/claude-session-broker-mcp.git
+cd claude-session-broker-mcp
+```
+
+2. Install Python and dependencies:
+
+```bash
+uv python install 3.14.0
+uv sync
+```
+
+3. Register the MCP server with Claude Code:
+
+```bash
+claude mcp add -s user \
+  -e CLAUDE_SESSION_BROKER_URL=http://127.0.0.1:7899 \
+  session-broker -- "$PWD/.venv/bin/claude-session-broker-server"
+```
+
+4. Add the shell wrapper to your startup file:
+
+```bash
+echo 'source /absolute/path/to/claude-session-broker-mcp/scripts/claude_session_broker_shell.zsh' >> ~/.zshrc
+source ~/.zshrc
+```
+
+5. In each Claude Code tab, launch the MCP server with a unique name and group.
+6. The first live session auto-starts the local broker at `~/.claude-session-broker`.
 
 Note: python.org lists `3.14.3` as the latest stable release on 2026-04-02, but `uv` currently exposes `3.14.0` for managed macOS arm64 installs on this machine. The repo therefore pins `3.14.0` until `uv` catches up.
 
@@ -41,6 +67,18 @@ CC_NAME=orchestrator CC_GROUP=main claude --dangerously-skip-permissions --dange
 source ~/.zshrc
 cd /path/to/worker-repo
 CC_NAME=worker-a CC_GROUP=main claude --dangerously-skip-permissions --dangerously-load-development-channels server:session-broker
+```
+
+Equivalent wrapper-based launch:
+
+```bash
+cd /path/to/orchestrator-repo
+/absolute/path/to/claude-session-broker-mcp/scripts/cc-session orchestrator main -- --dangerously-skip-permissions
+```
+
+```bash
+cd /path/to/worker-repo
+/absolute/path/to/claude-session-broker-mcp/scripts/cc-session worker-a main -- --dangerously-skip-permissions
 ```
 
 Optional:
