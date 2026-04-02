@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 from pathlib import Path
 
 from claude_session_broker_mcp.cli import (
@@ -91,3 +92,36 @@ def test_load_launch_identity_for_tty_ignores_mismatched_cwd(tmp_path: Path) -> 
     )
 
     assert identity is None
+
+
+def test_record_launch_script_runs_with_system_python(tmp_path: Path) -> None:
+    script_path = (
+        Path(__file__).resolve().parents[1] / "scripts" / "record_claude_launch.py"
+    )
+    launch_file = launch_registry_file(tmp_path, "ttys123")
+
+    completed = subprocess.run(
+        [
+            "/usr/bin/python3",
+            str(script_path),
+            "--tty",
+            "ttys123",
+            "--cwd",
+            "/tmp/work",
+            "--data-dir",
+            str(tmp_path),
+            "--session-name",
+            "controller",
+            "--group-name",
+            "main",
+            "--description",
+            "coordinator",
+        ],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert completed.returncode == 0
+    assert launch_file.exists()
+    assert "\"session_name\": \"controller\"" in launch_file.read_text()

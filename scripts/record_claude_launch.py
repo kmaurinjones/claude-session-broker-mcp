@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -42,7 +42,7 @@ def main() -> int:
         "description": args.description,
         "cwd": str(Path(args.cwd).expanduser().resolve()),
         "tty": args.tty,
-        "updated_at": datetime.now(tz=UTC).isoformat(),
+        "updated_at": datetime.now(tz=timezone.utc).isoformat(),
         "pid": os.getpid(),
     }
     temporary_file = launch_file.with_suffix(".json.tmp")

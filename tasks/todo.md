@@ -11,6 +11,8 @@ Add a concise shareable explanation of what the broker is and how it works, and 
 
 Sanitize tracked files for public release, remove user-specific or company-specific references, and replace the existing published git history with a clean `main` branch so older private strings are not retained on the remote.
 
+Repair the shell-side launch recorder so named Claude launches still write session identity after the public scrub. The recorder must stay compatible with the system `python3` binary used by the shell wrapper, and wrapper failures must be loud instead of silently degrading to disabled MCP mode.
+
 ## Plan
 
 - [x] Create the project scaffold with AGENTS/docs/agents/tasks files.
@@ -27,7 +29,8 @@ Sanitize tracked files for public release, remove user-specific or company-speci
 - [x] Add an `ask_many` fan-out tool that sends one question to multiple peers concurrently and returns per-peer results without collapsing the whole call on partial timeout or delivery failure.
 - [x] Update docs to explain the product and the new orchestration flow clearly enough to share with teammates.
 - [x] Replace user-specific and company-specific examples, paths, and metadata with portable generic values.
-- [ ] Back up the repo, replace the git history with a sanitized `main` branch, and republish the remote.
+- [x] Back up the repo, replace the git history with a sanitized `main` branch, and republish the remote.
+- [x] Fix the launch recorder compatibility regression and add regression coverage for the system Python invocation path.
 
 ## Review
 
@@ -43,3 +46,5 @@ Sanitize tracked files for public release, remove user-specific or company-speci
 - Direct MCP client sanity check against the installed `claude-session-broker-server` binary shows the live tool list now includes `ask_many`.
 - `uv run ruff check .` passes after the public-release scrub.
 - `uv run pytest` passes with 18 tests after the public-release scrub.
+- The repaired shell-side launch recorder now creates launch files correctly under the system `/usr/bin/python3` path.
+- `uv run pytest` passes with 19 tests after adding system-Python launch-recorder regression coverage.
