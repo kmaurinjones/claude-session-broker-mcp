@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+repo_dir="$(cd "${script_dir}/.." && pwd)"
+
+mkdir -p "${repo_dir}/.session-broker"
+
+exec "${repo_dir}/.venv/bin/claude-session-broker-broker" \
+  --host 127.0.0.1 \
+  --port 7899 \
+  --data-dir "${repo_dir}/.session-broker"

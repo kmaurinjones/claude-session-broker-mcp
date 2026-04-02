@@ -1,0 +1,47 @@
+[project]
+name = "claude-session-broker-mcp"
+version = "0.1.0"
+description = "Named, scoped MCP session broker for coordinating Claude Code sessions"
+readme = "README.md"
+requires-python = ">=3.14.0"
+dependencies = [
+    "fastapi>=0.116.0",
+    "httpx>=0.28.0",
+    "mcp>=1.20.0",
+    "pydantic>=2.11.0",
+    "uvicorn>=0.35.0",
+]
+
+[project.scripts]
+claude-session-broker-broker = "claude_session_broker_mcp.cli:run_broker"
+claude-session-broker-server = "claude_session_broker_mcp.cli:run_server"
+claude-session-broker-doctor = "claude_session_broker_mcp.cli:run_doctor"
+
+[build-system]
+requires = ["uv_build>=0.9.10,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.12.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "B",
+    "C4",
+    "E",
+    "F",
+    "I",
+    "UP",
+    "W",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
